@@ -4,26 +4,43 @@ import Button from './Button/Button';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Modal from './Modal/Modal';
 import Searchbar from './Searchbar/Searchbar';
-
-//const BASE_URL = 'https://pixabay.com/api/';
-//const KEY = '32106201-0c90331702e18f870e8d36f12';
+import api from '../api/api';
 
 export default class App extends Component {
   state = {
+    images: [],
     page: 1,
     searchQuery: '',
     countHits: 0,
-    isLoader: false,
+    isLoading: false,
     isShow: false,
+    error: null,
   };
+
+  async componentDidMount() {
+    const { searchQuery, page } = this.state;
+    this.setState({ isLoading: true });
+    try {
+      const images = api.fetchArticlesWithQuery(searchQuery, page);
+      this.setState({ images });
+    } catch (error) {
+      this.setState({ error });
+    } finally {
+      this.setState({
+        isLoading: false,
+      });
+    }
+  }
   onLoad = () => {};
   render() {
-    const { isLoader, isShow } = this.state;
+    const { isLoading, isShow, images, error } = this.state;
     return (
       <div>
         <Searchbar />
-        <Loader visible={isLoader} />
-        <ImageGallery />
+        {error && <p>Whoops, something went wrong: {error.message}</p>}
+        {isLoading ?? <Loader visible={isLoading} />}
+        {images.length > 0 ?? <ImageGallery images={images} />}
+
         <Button onClick={this.onLoad} />
         <Modal visible={isShow} />
       </div>
