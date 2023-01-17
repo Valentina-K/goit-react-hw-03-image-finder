@@ -109,7 +109,7 @@ img {
   font-size: 20px;
   border: none;
   outline: none;
-  padding-left: 4px;
+  padding-left: 10px;
   padding-right: 4px;
 }
 
@@ -204,4 +204,9 @@ img {
 .Button:hover,
 .Button:focus {
   background-color: #303f9f;
+}
+
+.Loader {
+  display: block;
+  margin: 0 auto;
 }

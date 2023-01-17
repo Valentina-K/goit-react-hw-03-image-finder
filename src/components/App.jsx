@@ -4,6 +4,7 @@ import Button from './Button/Button';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Modal from './Modal/Modal';
 import Searchbar from './Searchbar/Searchbar';
+import Error from './Error/Error';
 import api from '../api/api';
 
 export default class App extends Component {
@@ -15,13 +16,14 @@ export default class App extends Component {
     isLoading: false,
     isShow: false,
     error: null,
+    status: 'idle',
   };
 
-  async componentDidMount() {
+  /* async componentDidMount() {
     const { searchQuery, page } = this.state;
     this.setState({ isLoading: true });
     try {
-      const images = api.fetchArticlesWithQuery(searchQuery, page);
+      const images = await api.fetchImagesWithQuery(searchQuery, page);
       this.setState({ images });
     } catch (error) {
       this.setState({ error });
@@ -30,20 +32,63 @@ export default class App extends Component {
         isLoading: false,
       });
     }
+  } */
+  async componentDidUpdate(_, prevState) {
+    const { searchQuery, page, error } = this.state;
+    if (prevState.searchQuery !== this.state.searchQuery && error === null) {
+      try {
+        const images = await api.fetchImagesWithQuery(searchQuery, page);
+        if (images.length === 0) {
+          throw error;
+        }
+        this.setState({
+          images,
+          error: null,
+          status: 'resolved',
+          page: prevState.page + 1,
+        });
+      } catch (error) {
+        this.setState({
+          error: { message: 'Request returned nothing' },
+          status: 'rejected',
+        });
+      }
+    }
   }
   onLoad = () => {};
+  onSearch = searchQuery => {
+    this.setState({ searchQuery, page: 1 });
+  };
   render() {
-    const { isLoading, isShow, images, error } = this.state;
-    return (
-      <div>
-        <Searchbar />
-        {error && <p>Whoops, something went wrong: {error.message}</p>}
-        {isLoading ?? <Loader visible={isLoading} />}
-        {images.length > 0 ?? <ImageGallery images={images} />}
-
-        <Button onClick={this.onLoad} />
-        <Modal visible={isShow} />
-      </div>
-    );
+    const { images, error, status } = this.state;
+    if (status === 'idle') {
+      return <Searchbar onSearch={this.onSearch} />;
+    }
+    if (status === 'pending') {
+      return (
+        <>
+          <Searchbar onSearch={this.onSearch} />
+          <Loader />
+        </>
+      );
+    }
+    if (status === 'resolved') {
+      return (
+        <>
+          <Searchbar onSearch={this.onSearch} />
+          <ImageGallery images={images} />
+          <Button onClick={this.onLoad} />
+          <Modal />
+        </>
+      );
+    }
+    if (status === 'rejected') {
+      return (
+        <>
+          <Searchbar onSearch={this.onSearch} />
+          <Error message={error.message} />
+        </>
+      );
+    }
   }
 }
