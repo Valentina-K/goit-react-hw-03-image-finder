@@ -1,8 +1,10 @@
 import { PropTypes } from 'prop-types';
-const ImageGalleryItem = ({ webformatURL, tags }) => {
+const ImageGalleryItem = ({ webformatURL, tags, onClick }) => {
   return (
     <li className="ImageGalleryItem">
-      <img className="ImageGalleryItem-image" src={webformatURL} alt={tags} />
+      <div onClick={onClick}>
+        <img className="ImageGalleryItem-image" src={webformatURL} alt={tags} />
+      </div>
     </li>
   );
 };

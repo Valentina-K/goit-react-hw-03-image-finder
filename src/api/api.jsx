@@ -14,7 +14,10 @@ export const fetchImagesWithQuery = async (searchQuery, page) => {
       page,
     },
   });
-  return response.data.hits;
+  return {
+    hits: response.data.hits,
+    totalHits: response.data.totalHits,
+  };
 };
 
 const api = {

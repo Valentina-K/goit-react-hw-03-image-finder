@@ -21,8 +21,8 @@ export default class Searchbar extends Component {
       return;
     }
     this.props.onSearch(this.state.search);
-    this.reset();
   };
+  onFocus = () => this.reset();
   reset = () => {
     this.setState({ search: '' });
   };
@@ -47,6 +47,7 @@ export default class Searchbar extends Component {
             placeholder="Search images and photos"
             value={this.state.search}
             onChange={this.onChange}
+            onFocus={this.onFocus}
           />
         </form>
       </header>

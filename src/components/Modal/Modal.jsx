@@ -1,8 +1,8 @@
 import { PropTypes } from 'prop-types';
-const Modal = ({ largeImageURL, tags }) => {
+const Modal = ({ largeImageURL, tags, onClick }) => {
   return (
-    <div className="overlay">
-      <div className="modal">
+    <div className="Overlay" onClick={onClick}>
+      <div className="Modal">
         <img src={largeImageURL} alt={tags} />
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import ImageGallery from './ImageGallery/ImageGallery';
-import Modal from './Modal/Modal';
+
 import Searchbar from './Searchbar/Searchbar';
 import Error from './Error/Error';
 import api from '../api/api';
@@ -14,39 +14,28 @@ export default class App extends Component {
     searchQuery: '',
     countHits: 0,
     isLoading: false,
-    isShow: false,
     error: null,
     status: 'idle',
   };
 
-  /* async componentDidMount() {
-    const { searchQuery, page } = this.state;
-    this.setState({ isLoading: true });
-    try {
-      const images = await api.fetchImagesWithQuery(searchQuery, page);
-      this.setState({ images });
-    } catch (error) {
-      this.setState({ error });
-    } finally {
-      this.setState({
-        isLoading: false,
-      });
-    }
-  } */
   async componentDidUpdate(_, prevState) {
     const { searchQuery, page, error } = this.state;
-    if (prevState.searchQuery !== this.state.searchQuery && error === null) {
+    console.log('componentDidUpdate', searchQuery, page);
+    if (prevState.searchQuery !== searchQuery || prevState.page !== page) {
       try {
-        const images = await api.fetchImagesWithQuery(searchQuery, page);
-        if (images.length === 0) {
+        const { hits, totalHits } = await api.fetchImagesWithQuery(
+          searchQuery,
+          page
+        );
+        console.log(hits);
+        if (hits.length === 0) {
           throw error;
         }
-        this.setState({
-          images,
+        this.setState(prevState => ({
+          images: [...prevState.images, ...hits],
           error: null,
           status: 'resolved',
-          page: prevState.page + 1,
-        });
+        }));
       } catch (error) {
         this.setState({
           error: { message: 'Request returned nothing' },
@@ -55,12 +44,28 @@ export default class App extends Component {
       }
     }
   }
-  onLoad = () => {};
-  onSearch = searchQuery => {
-    this.setState({ searchQuery, page: 1 });
+  onLoad = () => {
+    console.log('onLoad', this.state.page, this.state.countHits);
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+      countHits: prevState.countHits + 12,
+    }));
   };
+  onSearch = searchQuery => {
+    console.log('onSearch', searchQuery);
+    this.setState({
+      searchQuery,
+      page: 1,
+      countHits: 0,
+      status: 'pending',
+      images: [],
+    });
+  };
+  onClickImage = id => this.setState({ isShow: true });
+  onClickOverlay = () => this.setState({ isShow: false });
   render() {
     const { images, error, status } = this.state;
+    console.log('render', status, images);
     if (status === 'idle') {
       return <Searchbar onSearch={this.onSearch} />;
     }
@@ -78,7 +83,6 @@ export default class App extends Component {
           <Searchbar onSearch={this.onSearch} />
           <ImageGallery images={images} />
           <Button onClick={this.onLoad} />
-          <Modal />
         </>
       );
     }
