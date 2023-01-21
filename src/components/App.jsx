@@ -61,8 +61,7 @@ export default class App extends Component {
       images: [],
     });
   };
-  onClickImage = id => this.setState({ isShow: true });
-  onClickOverlay = () => this.setState({ isShow: false });
+
   render() {
     const { images, error, status } = this.state;
     console.log('render', status, images);

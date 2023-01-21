@@ -14,7 +14,11 @@ export default class ImageGallery extends Component {
     console.log('onClickImage', largeImageURL);
     this.setState({ isShow: true, largeImageURL, tags });
   };
-  onClickOverlay = () => this.setState({ isShow: false, largeImageURL: '' });
+  onClickOverlay = e => {
+    if (e.target.className === 'Overlay') {
+      this.setState({ isShow: false, largeImageURL: '' });
+    }
+  };
   render() {
     const { isShow, largeImageURL, tags } = this.state;
     return (
