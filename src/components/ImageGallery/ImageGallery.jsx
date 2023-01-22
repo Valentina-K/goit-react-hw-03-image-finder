@@ -11,7 +11,6 @@ export default class ImageGallery extends Component {
   };
 
   onClickImage = (largeImageURL, tags) => {
-    console.log('onClickImage', largeImageURL);
     this.setState({ isShow: true, largeImageURL, tags });
   };
   onClickOverlay = e => {
@@ -46,28 +45,6 @@ export default class ImageGallery extends Component {
   }
 }
 
-/* const isShow = false;
-const largeImageURL = '';
-function onClickImage(largeImageURL){
-  isShow = true;
-  largeImageURL = largeImageURL;
-}
-const ImageGallery = ({ images }) => {
-  return (
-    <ul className="ImageGallery">
-      {images.map(image => (
-        <ImageGalleryItem
-          key={image.id}
-          id={image.id}
-          webformatURL={image.webformatURL}
-          tags={image.tags}
-          onClick={this.onClickImage(largeImageURL)}
-        />
-      ))}
-      {isShow && <Modal largeImageURL={largeImageURL} tags onClick={this.onClickOverlay} />}
-    </ul>
-  );
-}; */
 ImageGallery.propTypes = {
   images: PropTypes.arrayOf(
     PropTypes.shape({

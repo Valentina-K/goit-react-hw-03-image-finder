@@ -10,6 +10,8 @@ const Modal = ({ largeImageURL, tags, onClick }) => {
 };
 
 Modal.propTypes = {
-  largeImageURL: PropTypes.string,
+  largeImageURL: PropTypes.string.isRequired,
+  tags: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
 };
 export default Modal;

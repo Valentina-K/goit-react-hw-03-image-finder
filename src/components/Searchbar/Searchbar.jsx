@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Notiflix from 'notiflix';
 import imgSearch from '../../images/imgSearch.svg';
 
 export default class Searchbar extends Component {
@@ -17,7 +18,9 @@ export default class Searchbar extends Component {
   onSubmit = e => {
     e.preventDefault();
     if (this.state.search === '') {
-      alert('error');
+      Notiflix.Notify.warning(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
       return;
     }
     this.props.onSearch(this.state.search);

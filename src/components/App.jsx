@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
+import Notiflix from 'notiflix';
 import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import ImageGallery from './ImageGallery/ImageGallery';
-
 import Searchbar from './Searchbar/Searchbar';
-import Error from './Error/Error';
 import api from '../api/api';
 
 export default class App extends Component {
@@ -12,59 +11,63 @@ export default class App extends Component {
     images: [],
     page: 1,
     searchQuery: '',
-    countHits: 0,
-    isLoading: false,
-    error: null,
+    countHits: 12,
     status: 'idle',
   };
 
   async componentDidUpdate(_, prevState) {
-    const { searchQuery, page, error } = this.state;
-    console.log('componentDidUpdate', searchQuery, page);
+    const { searchQuery, page, countHits } = this.state;
     if (prevState.searchQuery !== searchQuery || prevState.page !== page) {
       try {
         const { hits, totalHits } = await api.fetchImagesWithQuery(
           searchQuery,
           page
         );
-        console.log(hits);
         if (hits.length === 0) {
-          throw error;
+          throw 'Sorry, there are no images matching your search query. Please try again.';
         }
-        this.setState(prevState => ({
-          images: [...prevState.images, ...hits],
-          error: null,
-          status: 'resolved',
-        }));
+        if (countHits >= totalHits) {
+          Notiflix.Notify.info(
+            "We're sorry, but you've reached the end of search results."
+          );
+          this.setState({
+            images: [...prevState.images, ...hits],
+            status: 'resolvedAll',
+          });
+        } else {
+          this.setState(prevState => ({
+            images: [...prevState.images, ...hits],
+            status: 'resolved',
+          }));
+        }
       } catch (error) {
+        Notiflix.Notify.warning(error);
         this.setState({
-          error: { message: 'Request returned nothing' },
-          status: 'rejected',
+          status: 'idle',
         });
       }
     }
   }
+
   onLoad = () => {
-    console.log('onLoad', this.state.page, this.state.countHits);
     this.setState(prevState => ({
       page: prevState.page + 1,
       countHits: prevState.countHits + 12,
+      status: 'pendingLoading',
     }));
   };
   onSearch = searchQuery => {
-    console.log('onSearch', searchQuery);
     this.setState({
       searchQuery,
       page: 1,
-      countHits: 0,
+      countHits: 12,
       status: 'pending',
       images: [],
     });
   };
 
   render() {
-    const { images, error, status } = this.state;
-    console.log('render', status, images);
+    const { images, status } = this.state;
     if (status === 'idle') {
       return <Searchbar onSearch={this.onSearch} />;
     }
@@ -85,11 +88,20 @@ export default class App extends Component {
         </>
       );
     }
-    if (status === 'rejected') {
+    if (status === 'pendingLoading') {
       return (
         <>
           <Searchbar onSearch={this.onSearch} />
-          <Error message={error.message} />
+          <ImageGallery images={images} />
+          <Loader />
+        </>
+      );
+    }
+    if (status === 'resolvedAll') {
+      return (
+        <>
+          <Searchbar onSearch={this.onSearch} />
+          <ImageGallery images={images} />
         </>
       );
     }
