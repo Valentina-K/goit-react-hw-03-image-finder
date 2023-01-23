@@ -13,10 +13,8 @@ export default class ImageGallery extends Component {
   onClickImage = (largeImageURL, tags) => {
     this.setState({ isShow: true, largeImageURL, tags });
   };
-  onClickOverlay = e => {
-    if (e.target.className === 'Overlay') {
-      this.setState({ isShow: false, largeImageURL: '' });
-    }
+  onClickOverlay = () => {
+    this.setState({ isShow: false, largeImageURL: '' });
   };
   render() {
     const { isShow, largeImageURL, tags } = this.state;
@@ -34,11 +32,9 @@ export default class ImageGallery extends Component {
           ))}
         </ul>
         {isShow && (
-          <Modal
-            largeImageURL={largeImageURL}
-            tags={tags}
-            onClick={this.onClickOverlay}
-          />
+          <Modal onClose={this.onClickOverlay}>
+            <img src={largeImageURL} alt={tags} />
+          </Modal>
         )}
       </>
     );

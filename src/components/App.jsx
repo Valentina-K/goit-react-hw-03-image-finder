@@ -24,7 +24,9 @@ export default class App extends Component {
           page
         );
         if (hits.length === 0) {
-          throw 'Sorry, there are no images matching your search query. Please try again.';
+          throw new Error(
+            'Sorry, there are no images matching your search query. Please try again.'
+          );
         }
         if (countHits >= totalHits) {
           Notiflix.Notify.info(
@@ -41,7 +43,7 @@ export default class App extends Component {
           }));
         }
       } catch (error) {
-        Notiflix.Notify.warning(error);
+        Notiflix.Notify.warning(error.message);
         this.setState({
           status: 'idle',
         });
