@@ -37,8 +37,12 @@ export default class App extends Component {
             status: 'resolvedAll',
           });
         } else {
+          const newHits = hits.map(hit => {
+            let { id, tags, largeImageURL, webformatURL } = hit;
+            return { id, tags, largeImageURL, webformatURL };
+          });
           this.setState(prevState => ({
-            images: [...prevState.images, ...hits],
+            images: [...prevState.images, ...newHits],
             status: 'resolved',
           }));
         }

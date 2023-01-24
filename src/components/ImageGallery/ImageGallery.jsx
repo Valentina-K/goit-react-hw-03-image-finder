@@ -4,6 +4,15 @@ import Modal from '../Modal/Modal';
 import React, { Component } from 'react';
 
 export default class ImageGallery extends Component {
+  static propTypes = {
+    images: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        webformatURL: PropTypes.string,
+        tags: PropTypes.string,
+      })
+    ),
+  };
   state = {
     isShow: false,
     largeImageURL: '',
@@ -40,13 +49,3 @@ export default class ImageGallery extends Component {
     );
   }
 }
-
-ImageGallery.propTypes = {
-  images: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      webformatURL: PropTypes.string,
-      tags: PropTypes.string,
-    })
-  ),
-};
